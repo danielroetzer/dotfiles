@@ -1,0 +1,6 @@
+[includeIf "gitdir:~/Documents/Personal/"]
+  path = ~/.config/git/.gitconfig-personal
+[includeIf "gitdir:~/Documents/Work/"]
+  path = ~/.config/git/.gitconfig-work
+[init]
+	defaultBranch = master
