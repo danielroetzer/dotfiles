@@ -4,3 +4,5 @@
   path = ~/.config/git/.gitconfig-work
 [init]
 	defaultBranch = master
+[pull]
+	rebase = false
