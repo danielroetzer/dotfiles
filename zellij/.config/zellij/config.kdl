@@ -1,0 +1,54 @@
+theme "catppuccin-mocha"
+
+themes {
+  catppuccin-mocha {
+    bg "#585b70" // Surface2
+    fg "#cdd6f4"
+    red "#f38ba8"
+    green "#a6e3a1"
+    blue "#89b4fa"
+    yellow "#f9e2af"
+    magenta "#f5c2e7" // Pink
+    orange "#fab387" // Peach
+    cyan "#89dceb" // Sky
+    black "#181825" // Mantle
+    white "#cdd6f4"
+  }
+}
+
+keybinds {
+  normal clear-defaults=true {
+    bind "Ctrl b" { SwitchToMode "Tmux"; }
+    bind "Ctrl p" { SwitchToMode "Tmux"; }
+
+    bind "Alt n" { NewPane; }
+    bind "Alt x" { CloseFocus; SwitchToMode "Normal"; }
+    bind "Alt w" { ToggleFloatingPanes;}
+    bind "Alt t" { NewTab;}
+    bind "Alt h" "Alt Left" { MoveFocusOrTab "Left"; }
+    bind "Alt l" "Alt Right" { MoveFocusOrTab "Right"; }
+    bind "Alt j" "Alt Down" { MoveFocus "Down"; }
+    bind "Alt k" "Alt Up" { MoveFocus "Up"; }
+    bind "Alt +" { Resize "Increase"; }
+    bind "Alt -" { Resize "Decrease"; }
+    bind "Alt [" { PreviousSwapLayout; }
+    bind "Alt ]" { NextSwapLayout; }
+  }
+
+  tmux clear-defaults=true {
+    bind "Ctrl b" { Write 2; SwitchToMode "Normal"; }
+    bind "Ctrl p" { Write 2; SwitchToMode "Normal"; }
+    bind "Esc" { SwitchToMode "Normal"; }
+    bind "g" { SwitchToMode "Locked"; }
+    bind "p" { SwitchToMode "Pane"; }
+    bind "t" { SwitchToMode "Tab"; }
+    bind "n" { SwitchToMode "Resize"; }
+    bind "h" { SwitchToMode "Move"; }
+    bind "s" { SwitchToMode "Scroll"; }
+    bind "o" { SwitchToMode "Session"; }
+    bind "q" { Quit; }
+
+    bind "f" { ToggleFocusFullscreen; SwitchToMode "Normal"; }
+    bind "w" { TogglePaneEmbedOrFloating; SwitchToMode "Normal"; }
+  }
+}
