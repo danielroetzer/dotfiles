@@ -19,7 +19,6 @@ themes {
 keybinds {
   normal clear-defaults=true {
     bind "Ctrl b" { SwitchToMode "Tmux"; }
-    bind "Ctrl p" { SwitchToMode "Tmux"; }
 
     bind "Alt n" { NewPane; }
     bind "Alt x" { CloseFocus; SwitchToMode "Normal"; }
@@ -37,7 +36,6 @@ keybinds {
 
   tmux clear-defaults=true {
     bind "Ctrl b" { Write 2; SwitchToMode "Normal"; }
-    bind "Ctrl p" { Write 2; SwitchToMode "Normal"; }
     bind "Esc" { SwitchToMode "Normal"; }
     bind "g" { SwitchToMode "Locked"; }
     bind "p" { SwitchToMode "Pane"; }
@@ -48,7 +46,21 @@ keybinds {
     bind "o" { SwitchToMode "Session"; }
     bind "q" { Quit; }
 
+    // Enable some pane related shortcuts in tmux mode.
+    bind "Enter" "Esc" { SwitchToMode "Normal"; }
+    bind "h" "Left" { MoveFocus "Left"; }
+    bind "l" "Right" { MoveFocus "Right"; }
+    bind "j" "Down" { MoveFocus "Down"; }
+    bind "k" "Up" { MoveFocus "Up"; }
+    bind "p" { SwitchFocus; }
+    bind "n" { NewPane; SwitchToMode "Normal"; }
+    bind "d" { NewPane "Down"; SwitchToMode "Normal"; }
+    bind "r" { NewPane "Right"; SwitchToMode "Normal"; }
+    bind "x" { CloseFocus; SwitchToMode "Normal"; }
     bind "f" { ToggleFocusFullscreen; SwitchToMode "Normal"; }
-    bind "w" { TogglePaneEmbedOrFloating; SwitchToMode "Normal"; }
+    bind "z" { TogglePaneFrames; SwitchToMode "Normal"; }
+    bind "w" { ToggleFloatingPanes; SwitchToMode "Normal"; }
+    bind "e" { TogglePaneEmbedOrFloating; SwitchToMode "Normal"; }
+    bind "c" { SwitchToMode "RenamePane"; PaneNameInput 0;}
   }
 }
