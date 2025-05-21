@@ -84,7 +84,7 @@
     }
   },
   {
-    "context": "Editor",
+    "context": "Editor || Picker",
     "bindings": {
       // Enables global cancel, whenever an Editor is opened
       // E.g.: Renaming/creating files inline in project panel. Command Palette. File Pickers
