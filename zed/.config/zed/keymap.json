@@ -1,0 +1,153 @@
+// Zed keymap
+//
+// For information on binding keys, see the Zed
+// documentation: https://zed.dev/docs/key-bindings
+//
+// To see the default key bindings run `zed: open default keymap`
+// from the command palette.
+[
+  {
+    // Globals
+    "context": "Workspace",
+    "bindings": {
+      // Pane navigation
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-j": "workspace::ActivatePaneDown"
+    }
+  },
+  {
+    "context": "Editor && VimControl && !VimWaiting && !menu",
+    "bindings": {
+      "shift-k": "editor::Hover",
+      "space t": "workspace::NewCenterTerminal",
+
+      // Pane navigation
+      // Needs to be set here as well, so the global ones are not overwritten
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-j": "workspace::ActivatePaneDown",
+
+      // Window management
+      "space w s": "pane::SplitDown",
+      "space w v": "pane::SplitRight",
+      "space -": "pane::SplitDown",
+      "space |": "pane::SplitRight",
+      "space w d": "pane::CloseAllItems",
+
+      // Buffers
+      "shift-h": "pane::ActivatePreviousItem",
+      "shift-l": "pane::ActivateNextItem",
+      "space b d": "pane::CloseActiveItem", // Close active buffer
+      "space b o": "pane::CloseInactiveItems", // Close other buffers
+      "space e": "pane::RevealInProjectPanel",
+      "space o": "tab_switcher::Toggle", // Buffer switcher
+
+      // Project Navigation
+      "space f f": "file_finder::Toggle",
+      "space s g": "workspace::NewSearch",
+      "space f p": "projects::OpenRecent",
+
+      // Code Actions
+      "space c r": "editor::Rename",
+      "space c a": "editor::ToggleCodeActions",
+
+      // Missing LSP actions
+      "g r": "editor::FindAllReferences",
+
+      // Quick 2 letter search
+      "s": "vim::PushSneak",
+      "shift-s": "vim::PushSneakBackward",
+
+      // Easier to follow vertical motions
+      "ctrl-d": ["workspace::SendKeystrokes", "1 2 j z z"],
+      "ctrl-u": ["workspace::SendKeystrokes", "1 2 k z z"],
+      "ctrl-f": ["workspace::SendKeystrokes", "2 0 j z z"],
+      "ctrl-b": ["workspace::SendKeystrokes", "2 0 k z z"],
+      "shift-g": ["workspace::SendKeystrokes", "shift-g z z"],
+
+      // Git
+      "space g g": [
+        "task::Spawn",
+        { "task_name": "start lazygit", "reveal_target": "center" }
+      ],
+
+      // Chat with AI
+      "space a a": "agent::ToggleFocus",
+      // "ctrl-\\": "workspace::ToggleRightDock",
+      // "cmd-k": "workspace::ToggleRightDock",
+      "space a p": "assistant::InlineAssist"
+      // "cmd-l": "assistant::InlineAssist",
+      // "space a t": "workspace::ToggleRightDock",
+    }
+  },
+  {
+    "context": "Editor",
+    "bindings": {
+      // Enables global cancel, whenever an Editor is opened
+      // E.g.: Renaming/creating files inline in project panel. Command Palette. File Pickers
+      "ctrl-[": "menu::Cancel"
+    }
+  },
+  {
+    "context": "(BufferSearchBar > Editor) || (InlineAssistEditor > Editor)",
+    "bindings": {
+      // Enables closing of the search triggered with /
+      "ctrl-[": "editor::Cancel"
+    }
+  },
+  {
+    "context": "ProjectPanel && not_editing",
+    "bindings": {
+      "a": "project_panel::NewFile",
+      "A": "project_panel::NewDirectory",
+      "r": "project_panel::Rename",
+      "d": "project_panel::Delete",
+      "x": "project_panel::Cut",
+      "c": "project_panel::Copy",
+      "p": "project_panel::Paste",
+      "space e": "workspace::ToggleLeftDock",
+      ":": "command_palette::Toggle",
+      "/": "project_panel::NewSearchInDirectory",
+      "enter": "project_panel::OpenPermanent",
+      "h": "project_panel::CollapseSelectedEntry",
+      "l": "project_panel::ExpandSelectedEntry",
+      "o": "project_panel::OpenPermanent",
+      "t": "project_panel::OpenPermanent",
+      "v": "project_panel::OpenPermanent",
+      "shift-g": "menu::SelectLast",
+      "g g": "menu::SelectFirst",
+      "-": "project_panel::SelectParent",
+      "ctrl-6": "pane::AlternateFile"
+    }
+  },
+  {
+    "context": "EmptyPane || SharedScreen",
+    "bindings": {
+      // Project Navigation
+      "space f f": "file_finder::Toggle",
+      "space s g": "workspace::NewSearch",
+      "space f p": "projects::OpenRecent",
+      // New file
+      "space f n": "workspace::NewFile",
+      // Quit zed
+      "space q q": "zed::Quit"
+    }
+  },
+  {
+    "context": "vim_mode == insert && !menu",
+    "bindings": {
+      "j j": "vim::NormalBefore",
+      "j k": "vim::NormalBefore"
+    }
+  },
+  {
+    "context": "vim_mode == normal && !menu",
+    "bindings": {
+      // Get default "yank to to end of line" behaviour back
+      "shift-y": ["workspace::SendKeystrokes", "y $"]
+    }
+  }
+]
