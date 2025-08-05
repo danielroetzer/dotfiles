@@ -130,6 +130,7 @@ return {
         "python",
         "query",
         "regex",
+        "svelte",
         "tsx",
         "typescript",
         "vim",
