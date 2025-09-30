@@ -7,6 +7,9 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "features": {
+    "edit_prediction_provider": "copilot"
+  },
   "telemetry": {
     "metrics": false,
     "diagnostics": false
@@ -31,10 +34,26 @@
   },
   // AI
   "agent": {
-    "default_model": {
+    "inline_assistant_model": {
+      // "provider": "anthropic",
+      // "model": "claude-opus-4-latest"
       "provider": "copilot_chat",
       "model": "gpt-4.1"
     },
+    "default_model": {
+      "provider": "copilot_chat",
+      "model": "claude-sonnet-4"
+    },
     "version": "2"
   }
+  // "context_servers": {
+  //   "linear": {
+  //     "command": {
+  //       "path": "npx",
+  //       "args": ["-y", "mcp-remote", "https://mcp.linear.app/sse"],
+  //       "env": {}
+  //     },
+  //     "settings": {}
+  //   }
+  // }
 }
