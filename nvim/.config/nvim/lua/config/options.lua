@@ -43,7 +43,7 @@ opt.listchars = { -- custom whitespace characters
 opt.list = true -- enable custom whitespace characters
 
 -- clipboard
-opt.clipboard:append("unnamedplus") -- use system clipboard as default register
+opt.clipboard = "unnamedplus" -- use system clipboard as default register
 
 -- Enable loading of project specific config files named .nvim.lua
 opt.exrc = true
