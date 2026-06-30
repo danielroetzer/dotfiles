@@ -7,53 +7,92 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
-  "features": {
-    "edit_prediction_provider": "copilot"
+  "which_key": {
+    "enabled": true
+  },
+  "use_system_path_prompts": false,
+  "cli_default_open_behavior": "new_window",
+  "project_panel": {
+    "hide_root": false,
+    "sticky_scroll": false,
+    "scrollbar": {
+      "horizontal_scroll": true
+    },
+    "bold_folder_labels": false,
+    "auto_fold_dirs": false,
+    "indent_size": 14.0,
+    "entry_spacing": "comfortable",
+    "dock": "left"
+  },
+  "outline_panel": {
+    "indent_size": 20.0,
+    "button": true,
+    "dock": "left"
+  },
+  "collaboration_panel": {
+    "dock": "left"
+  },
+  "agent": {
+    "dock": "right",
+    "favorite_models": [],
+    "model_parameters": []
+  },
+  "git_panel": {
+    "button": true,
+    "dock": "left"
+  },
+  "lsp": {
+    "vtsls": {
+      "settings": {
+        "typescript": {
+          "updateImportsOnFileMove": {
+            "enabled": "always"
+          }
+        },
+        "javascript": {
+          "updateImportsOnFileMove": {
+            "enabled": "always"
+          }
+        }
+      },
+      "enable_lsp_tasks": true
+    }
+  },
+  "tab_bar": {
+    // "show": true,
+    "show_nav_history_buttons": false,
+    "show_tab_bar_buttons": false,
+  },
+  "title_bar": {},
+  "status_bar": {},
+  "toolbar": {
+    "quick_actions": false,
+  },
+  "tab_size": 2,
+  "ui_font_family": ".ZedSans",
+  "buffer_line_height": "comfortable",
+  "buffer_font_family": "FiraCode Nerd Font Mono",
+  "terminal": {
+    "dock": "right",
   },
   "telemetry": {
     "metrics": false,
-    "diagnostics": false
+    "diagnostics": false,
   },
-  "ui_font_size": 16,
-  "buffer_font_size": 16,
-  "theme": {
-    "mode": "dark",
-    "light": "Catppuccin Latte",
-    "dark": "Catppuccin Mocha"
-  },
+  "ui_font_size": 14.0,
+  "buffer_font_size": 14.0,
+  "theme": "Catppuccin Mocha",
   "icon_theme": "Catppuccin Mocha",
   "vim_mode": true,
   "cursor_blink": false,
-  "relative_line_numbers": true,
+  "relative_line_numbers": "enabled",
   "scrollbar": {
-    "show": "never"
+    "show": "never",
   },
   "vim": {
     "use_system_clipboard": "always",
-    "use_multiline_find": true
   },
-  // AI
-  "agent": {
-    "inline_assistant_model": {
-      // "provider": "anthropic",
-      // "model": "claude-opus-4-latest"
-      "provider": "copilot_chat",
-      "model": "gpt-4.1"
-    },
-    "default_model": {
-      "provider": "copilot_chat",
-      "model": "claude-sonnet-4"
-    },
-    "version": "2"
-  }
-  // "context_servers": {
-  //   "linear": {
-  //     "command": {
-  //       "path": "npx",
-  //       "args": ["-y", "mcp-remote", "https://mcp.linear.app/sse"],
-  //       "env": {}
-  //     },
-  //     "settings": {}
-  //   }
-  // }
+  "file_finder": {
+    "modal_max_width": "medium",
+  },
 }

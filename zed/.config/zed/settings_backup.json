@@ -1,0 +1,55 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run `zed: open default settings` from the
+// command palette (cmd-shift-p / ctrl-shift-p)
+{
+  "features": {
+    "edit_prediction_provider": "copilot"
+  },
+  "telemetry": {
+    "metrics": false,
+    "diagnostics": false
+  },
+  "ui_font_size": 16,
+  "buffer_font_size": 16,
+  "theme": "Ayu Dark",
+  "icon_theme": "Catppuccin Mocha",
+  "vim_mode": true,
+  "cursor_blink": false,
+  "relative_line_numbers": true,
+  "scrollbar": {
+    "show": "never"
+  },
+  "vim": {
+    "use_system_clipboard": "always",
+    "use_multiline_find": true
+  },
+  // AI
+  "agent": {
+    "inline_assistant_model": {
+      // "provider": "anthropic",
+      // "model": "claude-opus-4-latest"
+      "provider": "copilot_chat",
+      "model": "gpt-4.1"
+    },
+    "default_model": {
+      "provider": "copilot_chat",
+      "model": "claude-sonnet-4"
+    },
+    "version": "2"
+  }
+  // "context_servers": {
+  //   "linear": {
+  //     "command": {
+  //       "path": "npx",
+  //       "args": ["-y", "mcp-remote", "https://mcp.linear.app/sse"],
+  //       "env": {}
+  //     },
+  //     "settings": {}
+  //   }
+  // }
+}
