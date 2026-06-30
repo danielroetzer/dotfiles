@@ -1,0 +1,12 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/jesseduffield/lazygit/master/schema/config.json
+quitOnTopLevelReturn: true
+promptToReturnFromSubprocess: false
+
+os:
+  edit: "zed {{filename}}"
+  editAtLine: "zed {{filename}}:{{line}}"
+
+gui:
+  useHunkModeInStagingView: false
+  tabWidth: 2
+  nerdFontsVersion: "3"
