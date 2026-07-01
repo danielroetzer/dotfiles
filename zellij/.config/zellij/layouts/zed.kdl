@@ -1,0 +1,22 @@
+// Zellij layout for Zed's built-in terminal.
+// Applied via `zellij --layout zed ...` from Zed's terminal.shell command.
+layout {
+    pane stacked=true {
+        pane name="tests" {
+            command "npm"
+            args "run" "test:watch"
+        }
+        pane name="server" {
+            command "npm"
+            args "run" "dev:ode"
+        }
+        pane name="git" focus=true {
+            command "lazygit"
+        }
+        pane name="AI" {
+            command "bash"
+            args "-c" "exec claude -n \"$ZELLIJ_SESSION_NAME\""
+            start_suspended true
+        }
+    }
+}
