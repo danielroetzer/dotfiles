@@ -8,7 +8,7 @@
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
   "which_key": {
-    "enabled": true
+    "enabled": true,
   },
   "use_system_path_prompts": false,
   "cli_default_open_behavior": "new_window",
@@ -16,47 +16,47 @@
     "hide_root": false,
     "sticky_scroll": false,
     "scrollbar": {
-      "horizontal_scroll": true
+      "horizontal_scroll": true,
     },
     "bold_folder_labels": false,
     "auto_fold_dirs": false,
     "indent_size": 14.0,
     "entry_spacing": "comfortable",
-    "dock": "left"
+    "dock": "left",
   },
   "outline_panel": {
     "indent_size": 20.0,
     "button": true,
-    "dock": "left"
+    "dock": "left",
   },
   "collaboration_panel": {
-    "dock": "left"
+    "dock": "left",
   },
   "agent": {
     "dock": "right",
     "favorite_models": [],
-    "model_parameters": []
+    "model_parameters": [],
   },
   "git_panel": {
     "button": true,
-    "dock": "left"
+    "dock": "left",
   },
   "lsp": {
     "vtsls": {
       "settings": {
         "typescript": {
           "updateImportsOnFileMove": {
-            "enabled": "always"
-          }
+            "enabled": "always",
+          },
         },
         "javascript": {
           "updateImportsOnFileMove": {
-            "enabled": "always"
-          }
-        }
+            "enabled": "always",
+          },
+        },
       },
-      "enable_lsp_tasks": true
-    }
+      "enable_lsp_tasks": true,
+    },
   },
   "tab_bar": {
     // "show": true,
@@ -83,9 +83,12 @@
         "program": "bash",
         "args": [
           "-c",
-          "if [ -z \"$ZELLIJ\" ]; then exec zellij attach --create \"$(basename \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\")\"; else exec bash -l; fi"
-        ]
-      }
+          // Zed spawns this shell before it sizes the terminal pty. zellij builds
+          // the stacked layout at that tiny initial size and can't recover on resize
+          // (blank screen), so wait for a real size (bounded ~5s) before launching it.
+          "for _ in $(seq 1 100); do s=$(stty size 2>/dev/null); set -- $s; [ \"${1:-0}\" -ge 10 ] && [ \"${2:-0}\" -ge 20 ] && break; sleep 0.05; done; exec zellij --layout zed attach --create \"$(basename \"$PWD\")\""
+        ],
+      },
     },
   },
   "telemetry": {
