@@ -74,6 +74,19 @@
   "buffer_font_family": "FiraCode Nerd Font Mono",
   "terminal": {
     "dock": "right",
+    "button": false,
+    "toolbar": {
+      "breadcrumbs": false,
+    },
+    "shell": {
+      "with_arguments": {
+        "program": "bash",
+        "args": [
+          "-c",
+          "if [ -z \"$ZELLIJ\" ]; then exec zellij attach --create \"$(basename \"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\")\"; else exec bash -l; fi"
+        ]
+      }
+    },
   },
   "telemetry": {
     "metrics": false,
