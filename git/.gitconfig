@@ -53,7 +53,10 @@
   pager = delta
 [interactive]
   diffFilter = delta --color-only
+[include]
+  path = ~/.config/git/catppuccin.gitconfig
 [delta]
+  features = catppuccin-mocha
   navigate = true
   line-numbers = true
 [merge]
