@@ -10,3 +10,11 @@ gui:
   useHunkModeInStagingView: false
   tabWidth: 2
   nerdFontsVersion: "3"
+
+git:
+  # Cycle between pagers with `|`
+  pagers:
+    - colorArg: always
+      pager: delta --dark --paging=never
+    - colorArg: always
+      pager: delta --dark --paging=never --side-by-side --width={{columnWidth}}
