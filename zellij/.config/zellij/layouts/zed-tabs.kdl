@@ -1,0 +1,18 @@
+// Zellij layout for Zed's built-in terminal — tab-based variant of `zed.kdl`.
+// Applied via `zellij --layout zed-tabs ...` from Zed's terminal.shell command.
+layout {
+    default_tab_template {
+        // the default zellij tab-bar and status bar plugins
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        children
+    }
+    tab name="git" focus=true {
+        pane {
+            command "lazygit"
+        }
+    }
+    tab name="ai"
+    tab name="server"
+}
