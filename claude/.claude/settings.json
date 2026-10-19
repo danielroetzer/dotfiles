@@ -1,0 +1,30 @@
+{
+  "effortLevel": "high",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
+  },
+  "editorMode": "vim",
+  "autoCompactEnabled": true,
+  "useAutoModeDuringPlan": false,
+  "permissions": {},
+  "hooks": {
+    "SessionStart": [{ "hooks": [{ "type": "command", "command": "agent-event" }] }],
+    "SessionEnd": [{ "hooks": [{ "type": "command", "command": "agent-event" }] }],
+    "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "agent-event" }] }],
+    "PreToolUse": [
+      { "matcher": "AskUserQuestion", "hooks": [{ "type": "command", "command": "agent-event" }] }
+    ],
+    "PostToolUse": [{ "hooks": [{ "type": "command", "command": "agent-event" }] }],
+    "PermissionRequest": [{ "hooks": [{ "type": "command", "command": "agent-event" }] }],
+    "Notification": [
+      {
+        "matcher": "permission_prompt|elicitation_dialog|agent_needs_input",
+        "hooks": [{ "type": "command", "command": "agent-event" }]
+      }
+    ],
+    "Stop": [{ "hooks": [{ "type": "command", "command": "agent-event" }] }],
+    "StopFailure": [{ "hooks": [{ "type": "command", "command": "agent-event" }] }]
+  }
+}
