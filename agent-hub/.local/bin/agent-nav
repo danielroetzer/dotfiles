@@ -1,0 +1,144 @@
+#!/usr/bin/env bash
+# Navigator for the Claude agents tracked by agent-event.
+#
+#   agent-nav                      fzf picker, most urgent first; Enter jumps
+#   agent-nav --next               jump to the agent that has waited longest
+#   agent-nav --summary            counts for the zjstatus bar, e.g. "🔴2 🟢1 🟡3"
+#   agent-nav --preview <session>  picker preview: git info and the agent's screen
+#
+# Urgency: needs_input/error, then done, idle, working; oldest first within each.
+
+set -uo pipefail
+
+state_dir=${AGENT_HUB_STATE:-${XDG_STATE_HOME:-$HOME/.local/state}/agent-hub}
+sep=$'\x1f' # field separator; unlike tab, read keeps empty fields with it
+
+# Prints one line per agent whose zellij session is still running, sorted by
+# urgency: rank, since, session, pane, state, cwd, task, detail.
+agents() {
+  local files=("$state_dir"/*.json)
+  [[ -e ${files[0]} ]] || return 0
+  local live
+  live=$(zellij list-sessions --no-formatting 2>/dev/null | grep -v EXITED | cut -d' ' -f1)
+  jq -r --arg live "$live" --arg sep "$sep" '
+    select(.session as $s | $live | split("\n") | index($s))
+    | [ ({needs_input: 0, error: 0, done: 1, idle: 2, working: 3}[.state] // 4),
+        .since, .session, .pane, .state, .cwd, .task, .detail ]
+    | map(if . == null then "" else tostring end) | join($sep)' "${files[@]}" 2>/dev/null |
+    sort -t "$sep" -k1,1n -k2,2n
+}
+
+age() {
+  local s=$(($(date +%s) - $1))
+  if ((s < 60)); then echo "${s}s"
+  elif ((s < 3600)); then echo "$((s / 60))m"
+  elif ((s < 86400)); then echo "$((s / 3600))h"
+  else echo "$((s / 86400))d"
+  fi
+}
+
+icon() {
+  case $1 in
+    needs_input | error) echo 🔴 ;;
+    done) echo 🟢 ;;
+    working) echo 🟡 ;;
+    *) echo ⚪ ;;
+  esac
+}
+
+jump() {
+  local session=$1 pane=$2
+  if [[ -z ${ZELLIJ:-} ]]; then
+    exec zellij attach "$session"
+  elif [[ $session == "${ZELLIJ_SESSION_NAME:-}" ]]; then
+    [[ -n $pane ]] && zellij action focus-pane-id "$pane"
+  elif [[ -n $pane ]]; then
+    zellij action switch-session "$session" --pane-id "$pane"
+  else
+    zellij action switch-session "$session"
+  fi
+}
+
+summary() {
+  agents | awk -F "$sep" '
+    $5 == "needs_input" || $5 == "error" { red++ }
+    $5 == "done" { green++ }
+    $5 == "working" { yellow++ }
+    END {
+      out = ""
+      if (red) out = out "🔴" red " "
+      if (green) out = out "🟢" green " "
+      if (yellow) out = out "🟡" yellow " "
+      sub(/ $/, "", out)
+      printf "%s", out
+    }'
+}
+
+next() {
+  local rank since session pane state rest
+  while IFS=$sep read -r rank since session pane state rest; do
+    ((rank <= 1)) || break
+    [[ $session == "${ZELLIJ_SESSION_NAME:-}" ]] && continue
+    jump "$session" "$pane"
+    return
+  done < <(agents)
+  echo "Nothing needs you."
+  sleep 1
+}
+
+preview() {
+  local file=$state_dir/$1.json
+  [[ -f $file ]] || return 0
+  local pane cwd task detail
+  pane=$(jq -r '.pane // ""' "$file")
+  cwd=$(jq -r '.cwd // ""' "$file")
+  task=$(jq -r '.task // ""' "$file")
+  detail=$(jq -r '.detail // ""' "$file")
+
+  [[ -n $task ]] && printf '\e[1mTask:\e[0m %s\n' "$task"
+  [[ -n $detail ]] && printf '\e[1mLast:\e[0m %s\n' "$detail"
+  if [[ -d $cwd ]]; then
+    printf '\n\e[1m── git\e[0m\n'
+    git -C "$cwd" log --oneline --color=always -5 2>/dev/null
+    git -C "$cwd" diff --stat --color=always HEAD 2>/dev/null | tail -n 15
+  fi
+  if [[ -n $pane ]]; then
+    printf '\n\e[1m── screen\e[0m\n'
+    zellij -s "$1" action dump-screen --pane-id "$pane" 2>/dev/null | grep -v '^[[:space:]]*$' | tail -n 40
+  fi
+}
+
+picker() {
+  local rank since session pane state cwd task detail branch dirty text lines=
+  while IFS=$sep read -r rank since session pane state cwd task detail; do
+    branch=$(git -C "$cwd" branch --show-current 2>/dev/null)
+    dirty=$(git -C "$cwd" status --porcelain 2>/dev/null | wc -l)
+    text=$detail
+    [[ $state == working || -z $text ]] && text=$task
+    lines+=$(printf '%s\t%s\t%s %-32.32s %4s  %-28.28s ±%-3s %s' \
+      "$session" "$pane" "$(icon "$state")" "$session" "$(age "$since")" "$branch" "$dirty" "$text")$'\n'
+  done < <(agents)
+
+  if [[ -z $lines ]]; then
+    echo "No agents running."
+    sleep 1
+    return
+  fi
+
+  local choice
+  choice=$(printf '%s' "$lines" | fzf --ansi --delimiter '\t' --with-nth 3 \
+    --no-sort --layout reverse --prompt 'agent> ' \
+    --preview 'agent-nav --preview {1}' --preview-window 'down,60%') || return 0
+  jump "$(cut -f1 <<<"$choice")" "$(cut -f2 <<<"$choice")"
+}
+
+case ${1:-} in
+  --summary) summary ;;
+  --next) next ;;
+  --preview) preview "${2:?session}" ;;
+  "") picker ;;
+  *)
+    sed -n '2,9s/^# \{0,1\}//p' "$0" >&2
+    exit 1
+    ;;
+esac

@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+# Claude Code hook target (wired up in claude/.claude/settings.json).
+#
+# Records the agent's state for the current zellij session in
+# $AGENT_HUB_STATE/<session>.json and sends a desktop notification when the
+# agent starts waiting for you or finishes. agent-nav reads these files.
+#
+# Always exits 0: a non-zero exit would surface as a hook error in Claude, and
+# exit 2 from PreToolUse would block the tool.
+#
+# AGENT_HUB_DEBUG=1 appends every raw payload to $AGENT_HUB_STATE/debug.log.
+
+set -uo pipefail
+
+session=${ZELLIJ_SESSION_NAME:-}
+[[ -n $session ]] || exit 0 # not inside zellij: nothing to navigate to
+
+state_dir=${AGENT_HUB_STATE:-${XDG_STATE_HOME:-$HOME/.local/state}/agent-hub}
+mkdir -p "$state_dir" || exit 0
+file=$state_dir/$session.json
+
+payload=$(cat)
+[[ -n ${AGENT_HUB_DEBUG:-} ]] && printf '%s\n' "$payload" >>"$state_dir/debug.log"
+
+event=$(jq -r '.hook_event_name // ""' <<<"$payload" 2>/dev/null) || exit 0
+prev=$(cat "$file" 2>/dev/null) || prev='{}'
+jq -e 'type == "object"' <<<"$prev" >/dev/null 2>&1 || prev='{}'
+prev_state=$(jq -r '.state // ""' <<<"$prev" 2>/dev/null) || prev_state=
+
+# Collapses whitespace and truncates, so one-line displays stay readable.
+oneline='gsub("\\s+"; " ") | ltrimstr(" ") | .[0:300]'
+
+detail=
+task=
+case $event in
+  SessionStart)
+    state=idle
+    ;;
+  SessionEnd)
+    rm -f "$file"
+    exit 0
+    ;;
+  UserPromptSubmit)
+    state=working
+    task=$(jq -r ".prompt // \"\" | $oneline" <<<"$payload")
+    ;;
+  PostToolUse)
+    # Fires after every tool call; only matters when leaving a waiting state,
+    # e.g. after a permission was granted.
+    [[ $prev_state == working ]] && exit 0
+    state=working
+    ;;
+  PermissionRequest)
+    state=needs_input
+    detail=$(jq -r "\"Allow \(.tool_name): \" + (.tool_input | .command // .file_path // .url // tojson) | $oneline" <<<"$payload")
+    ;;
+  PreToolUse)
+    # Registered for AskUserQuestion only.
+    state=needs_input
+    detail=$(jq -r "[.tool_input.questions[]?.question] | join(\" / \") | if . == \"\" then \"Asking a question\" else . end | $oneline" <<<"$payload")
+    ;;
+  Notification)
+    case $(jq -r '.notification_type // ""' <<<"$payload") in
+      permission_prompt | elicitation_dialog | agent_needs_input) ;;
+      *) exit 0 ;; # idle_prompt etc. fire after a finished turn
+    esac
+    state=needs_input
+    # PermissionRequest/PreToolUse usually got here first with a better text.
+    if [[ $prev_state != needs_input ]]; then
+      detail=$(jq -r ".message // \"\" | $oneline" <<<"$payload")
+    fi
+    ;;
+  Stop)
+    state=done
+    detail=$(jq -r ".last_assistant_message // \"\" | $oneline" <<<"$payload")
+    ;;
+  StopFailure)
+    state=error
+    detail="Stopped on an API error"
+    ;;
+  *)
+    exit 0
+    ;;
+esac
+
+now=$(date +%s)
+pane=${ZELLIJ_PANE_ID:+terminal_$ZELLIJ_PANE_ID}
+cwd=${CLAUDE_PROJECT_DIR:-$(jq -r '.cwd // ""' <<<"$payload")}
+
+# Fields left empty keep their previous value; detail is reset when the agent
+# starts working again.
+jq -n \
+  --argjson prev "$prev" \
+  --arg session "$session" --arg pane "$pane" --arg state "$state" \
+  --arg prev_state "$prev_state" --argjson now "$now" --arg cwd "$cwd" \
+  --arg task "$task" --arg detail "$detail" '
+  $prev + {
+    session: $session,
+    pane: (if $pane != "" then $pane else $prev.pane end),
+    state: $state,
+    since: (if $state == $prev_state and $prev.since then $prev.since else $now end),
+    updated: $now,
+    cwd: (if $cwd != "" then $cwd else $prev.cwd end),
+    task: (if $task != "" then $task else ($prev.task // "") end),
+    detail: (if $detail != "" then $detail
+             elif $state == "working" or $state == "idle" then ""
+             else ($prev.detail // "") end)
+  }' >"$file.tmp.$$" 2>/dev/null && mv "$file.tmp.$$" "$file" || rm -f "$file.tmp.$$"
+
+# Notify only on transitions, so PermissionRequest + Notification for the same
+# prompt don't notify twice.
+if [[ $state != "$prev_state" ]] && command -v notify-send >/dev/null; then
+  body=$(jq -r '.detail' "$file" 2>/dev/null)
+  case $state in
+    needs_input) notify-send -a agent-hub "$session needs you" "$body" ;;
+    error) notify-send -a agent-hub -u critical "$session stopped" "$body" ;;
+    done) notify-send -a agent-hub "$session finished" "$body" ;;
+  esac
+fi
+
+exit 0

@@ -164,7 +164,9 @@
       "alt-9": ["terminal::SendText", "\u001b9"],
       "alt-r": ["terminal::SendText", "\u001br"],
       "alt-w": ["terminal::SendText", "\u001bw"],
-      "alt-shift-t": ["terminal::SendText", "\u001bT"]
+      "alt-shift-t": ["terminal::SendText", "\u001bT"],
+      "alt-a": ["terminal::SendText", "\u001ba"],
+      "alt-u": ["terminal::SendText", "\u001bu"]
     }
   }
 ]

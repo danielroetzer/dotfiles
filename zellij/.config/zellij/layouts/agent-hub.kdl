@@ -1,0 +1,33 @@
+// Zellij layout for one worktree with a Claude agent — zed-tabs.kdl plus a bottom
+// zjstatus bar that shows the agent-nav counts of every agent (agent-hub package).
+// Not wired into Zed yet; start it from a terminal outside zellij:
+//   zellij --layout agent-hub attach --create <worktree-name>
+layout {
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        children
+        pane size=1 borderless=true {
+            // Local copy of zjstatus v0.25.0; relative paths resolve against
+            // zellij's plugin dirs, not this file, hence the ~ path.
+            plugin location="file:~/.config/zellij/plugins/zjstatus.wasm" {
+                // Agent counts only; tabs and modes come from zellij's tab-bar above.
+                format_right  "{command_agents}"
+                format_space  ""
+
+                command_agents_command    "agent-nav --summary"
+                command_agents_format     "{stdout} "
+                command_agents_interval   "2"
+                command_agents_rendermode "static"
+            }
+        }
+    }
+    tab name="git" focus=true {
+        pane {
+            command "lazygit"
+        }
+    }
+    tab name="ai"
+    tab name="server"
+}

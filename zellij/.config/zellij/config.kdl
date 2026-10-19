@@ -6,6 +6,7 @@ theme "catppuccin-mocha"
 //   Alt          panes, and entering modes
 //   Alt Shift    tabs
 //   Alt 1..9     go to tab
+//   Alt a/u      agent picker / jump to next waiting agent (agent-nav)
 //
 // Rarely used actions live in modes (Alt p/r/m/s/o, Alt Shift t). Inside a mode
 // the single-letter keys apply; Esc/Enter or the mode's own key returns to Normal.
@@ -212,6 +213,10 @@ keybinds clear-defaults=true {
     bind "Alt 7" { GoToTab 7; }
     bind "Alt 8" { GoToTab 8; }
     bind "Alt 9" { GoToTab 9; }
+
+    // Agents (agent-hub package): picker, and jump to the agent waiting longest
+    bind "Alt a" { Run "agent-nav" { floating true; close_on_exit true; name "agents"; }; }
+    bind "Alt u" { Run "agent-nav" "--next" { floating true; close_on_exit true; name "agents"; }; }
   }
 
   shared_except "normal" "locked" {
