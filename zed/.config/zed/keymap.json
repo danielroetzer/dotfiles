@@ -147,5 +147,24 @@
       // Get default "yank to to end of line" behaviour back
       "shift-y": ["workspace::SendKeystrokes", "y $"]
     }
+  },
+  {
+    // Pass zellij's Alt keybinds through to the terminal; Zed binds these in
+    // the Pane/Workspace contexts and would swallow them otherwise.
+    "context": "Terminal",
+    "bindings": {
+      "alt-1": ["terminal::SendText", "\u001b1"],
+      "alt-2": ["terminal::SendText", "\u001b2"],
+      "alt-3": ["terminal::SendText", "\u001b3"],
+      "alt-4": ["terminal::SendText", "\u001b4"],
+      "alt-5": ["terminal::SendText", "\u001b5"],
+      "alt-6": ["terminal::SendText", "\u001b6"],
+      "alt-7": ["terminal::SendText", "\u001b7"],
+      "alt-8": ["terminal::SendText", "\u001b8"],
+      "alt-9": ["terminal::SendText", "\u001b9"],
+      "alt-r": ["terminal::SendText", "\u001br"],
+      "alt-w": ["terminal::SendText", "\u001bw"],
+      "alt-shift-t": ["terminal::SendText", "\u001bT"]
+    }
   }
 ]
