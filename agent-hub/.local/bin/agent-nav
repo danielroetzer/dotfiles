@@ -18,8 +18,13 @@ sep=$'\x1f' # field separator; unlike tab, read keeps empty fields with it
 agents() {
   local files=("$state_dir"/*.json)
   [[ -e ${files[0]} ]] || return 0
-  local live
-  live=$(zellij list-sessions --no-formatting 2>/dev/null | grep -v EXITED | cut -d' ' -f1)
+  # A session is running while its server socket exists. Deliberately not
+  # `zellij list-sessions`: it connects to every server, and run from the
+  # zjstatus bar it kept all zellij servers near 100% CPU.
+  local sock_dir=${ZELLIJ_SOCKET_DIR:-${XDG_RUNTIME_DIR:+$XDG_RUNTIME_DIR/zellij}} live= sock
+  for sock in "${sock_dir:-/tmp/zellij-$UID}"/contract_version_*/*; do
+    [[ -S $sock ]] && live+=${sock##*/}$'\n'
+  done
   jq -r --arg live "$live" --arg sep "$sep" '
     select(.session as $s | $live | split("\n") | index($s))
     | [ ({needs_input: 0, error: 0, done: 1, idle: 2, working: 3}[.state] // 4),

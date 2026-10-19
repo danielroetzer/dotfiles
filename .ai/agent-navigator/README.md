@@ -141,7 +141,15 @@ confirm the payloads for `AskUserQuestion` and `PermissionRequest`.
 
 ### Live agents
 
-A state file counts only if its session appears in `zellij ls -n` and is not `EXITED`. Crashed
+A state file counts only if its session's server socket exists
+(`$XDG_RUNTIME_DIR/zellij/contract_version_*/<session>`). Zellij removes the socket on
+`kill-session`, and resurrectable (`EXITED`) sessions have none.
+
+**Don't use `zellij list-sessions` here** (measured 2026-10-19). It connects to every running
+server. Run from the zjstatus command widget, which polls once per tab every 2s, it kept the
+`agent-hub` session's server at 91–105% CPU and also slowed every other session, until
+everything froze. With the socket check, each server sits at ~1% CPU. A `zellij` call from a
+plugin command or a hot path needs measuring first. Crashed
 agents that never ran `SessionEnd` therefore drop out once their session is gone. A pane-level
 `exited` check (from `list-panes`) is left out of v1 to keep `--summary` cheap. Add it if stale
 entries turn up.
