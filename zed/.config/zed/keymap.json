@@ -68,11 +68,9 @@
       "ctrl-b": ["workspace::SendKeystrokes", "2 0 k z z"],
       "shift-g": ["workspace::SendKeystrokes", "shift-g z z"],
 
-      // Git
-      "space g g": [
-        "task::Spawn",
-        { "task_name": "start lazygit", "reveal_target": "center" }
-      ],
+      // Git: focus the "git" tab (lazygit) in this repo's zellij session.
+      // The standalone "start lazygit" task is still defined but unbound.
+      "space g g": ["task::Spawn", { "task_name": "focus git tab" }],
 
       // Chat with AI
       "space a a": "agent::ToggleFocus",

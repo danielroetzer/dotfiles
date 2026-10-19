@@ -54,5 +54,19 @@
     "shell": {
       "program": "sh"
     }
+  },
+  {
+    // Focus the "git" tab of the `zed-tabs` layout in this repo's zellij session
+    // (it runs lazygit): the command switches the tab inside zellij;
+    // reveal_target=dock makes Zed focus the terminal dock; hide=always reaps
+    // the courier tab.
+    "label": "focus git tab",
+    "command": "zellij --session \"$(basename \"$ZED_WORKTREE_ROOT\")\" action go-to-tab-name git",
+    "reveal": "always",
+    "reveal_target": "dock",
+    "hide": "always",
+    "shell": {
+      "program": "sh"
+    }
   }
 ]
